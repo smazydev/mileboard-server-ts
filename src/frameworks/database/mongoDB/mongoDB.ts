@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const connectToMongoDB = () => {
   mongoose
-    .connect("mongodb://localhost:27017/sheetsDB", {
+    .connect(`mongodb://localhost:27017/boardsDB`, {
       useNewUrlParser: true,
     })
     .then(
