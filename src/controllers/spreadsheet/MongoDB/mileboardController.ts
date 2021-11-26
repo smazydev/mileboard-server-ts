@@ -15,7 +15,7 @@ router.get("/boards/get-all", async (req: Request, res: Response) => {
 router.get("/boards/:id", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
-  const mileboardData = await mileboardService.findSpreadsheetByID(
+  const mileboardData = await mileboardService.findMileboardByID(
     req.params.id
   );
   res.send(mileboardData);
@@ -36,7 +36,8 @@ router.post("/boards/update", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const { mileboardID, mileboardData } = req.body;
-  const response = await mileboardService.updateSpreadsheet(
+  console.log(mileboardID);
+  const response = await mileboardService.updateMileboard(
     mileboardID,
     mileboardData
   );
@@ -47,8 +48,9 @@ router.post("/boards/create", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const { id } = req.body;
+  console.log("Create",id);
   const newMileboard = new Mileboard({
-    spreadsheetID: id,
+    mileboardID: id,
   });
 
   const getData = await mileboardService.findMileboardByID(id);
@@ -59,10 +61,10 @@ router.post("/boards/create", async (req: Request, res: Response) => {
     }
   } else {
     try {
-      const addedMileboard = await mileboardService.addSpreadsheet(
+      const addedMileboard = await mileboardService.addMileboard(
         newMileboard
       );
-      res.status(200).send(`New Spreadsheet created! ${addedMileboard}`);
+      res.status(200).send(`New Mileboard created! ${addedMileboard}`);
     } catch (error) {
       console.log(error);
     }
