@@ -6,23 +6,27 @@ const mongoose = require("./frameworks/database/mongoDB/mongoDB");
 const cors = require("cors");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { Mileboard } = require("./entities/Mileboard"); 
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
-  },
+    origin: "*",
+    methods: ["GET", "POST"],
+    transports: ["websocket", "polling"],
+    credentials: true,
+  }
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "*",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "100mb"}));
 app.use(mileboardRouter);
 
 const start = () => {
@@ -43,17 +47,20 @@ io.on("connection", (socket) => {
 
   socket.on("comments", ({ id, msg }) => {
     socket.to(id).emit("comments", { id: socket.id, msg: msg });
-    console.log(id, msg, "Check Commit");
+    // console.log(id, msg, "Check Commit");
   });
 
   socket.on("room-id", (id) => {
     socket.join(id);
-    //console.log(id, "myId");
+    // const newMileboard = new Mileboard({mileboardID:id});
+    // const mileboardService = mileboardInjection.MileboardServiceSingleton.getInstance();
+    // mileboardService.addMileboard(newMileboard);
     console.log("BUGGA CHUGGA", io.sockets.adapter.rooms.get(id));
     io.to(id).emit("clients", io.sockets.adapter.rooms.get(id));
   });
 
   socket.on("object-added", ({ obj, roomID, id }) => {
+    console.log("object-created");
     socket.to(roomID).emit("new-add", { obj, id });
   });
 
@@ -62,14 +69,17 @@ io.on("connection", (socket) => {
   });
   //Object-modified listens for when a shape/text/image moves and or their dimensions are changed.
   socket.on("object-modified", (data) => {
+    console.log("Object Modified")
     socket.broadcast.emit("new-modification", data);
   });
   //add-text listens for when a text is added.
   socket.on("text-added", (data) => {
+    console.log("Text Created")
     socket.broadcast.emit("text-added", data);
   });
   socket.on("path-created", (data) => {
     //console.log(data);
+    console.log("Path Created")
     socket.broadcast.emit("path-created", data);
   });
   socket.on("mouse-positions", (data) => {
@@ -78,16 +88,25 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("mouse-positions", info);
   });
   socket.on("object-removed-id", (id) => {
+    console.log("object removed");
     socket.broadcast.emit("object-removed-id", id);
   });
 
   socket.on("image-data", (imgData) => {
+    console.log("image-added");
     socket.broadcast.emit("image-data", imgData);
   });
 
   socket.on("cloned-obj", (obj) => {
     socket.broadcast.emit(obj);
-    console.log(obj);
+    // console.log(obj);
+    // console.log(obj);
+  });
+
+  socket.on("save-canvas", (data) => {
+    const { id, canvasData } = data;
+    // const mileboardService = mileboardInjection.MileboardServiceSingleton.getInstance();
+    // mileboardService.updateMileboard(id,canvasData);
   });
   //disconnect listens for socket disonnection events.
 

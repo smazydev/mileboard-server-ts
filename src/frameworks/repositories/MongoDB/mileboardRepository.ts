@@ -1,3 +1,5 @@
+import e from "express";
+
 const Mileboard = require("../../../entities/Mileboard");
 const {
   MileboardModel,
@@ -51,41 +53,19 @@ class MileboardRepository implements IMileboardRepository {
   };
 
   update = async (id, mileboardData) => {
-    // if (spreadsheetData.length === 0) {
-    //   return "no data received"
-    // }
-
-    if (mileboardData.length === 0) {
+    if (!mileboardData) {
       return "no data received";
+    } 
+    try {
+      const document = await MileboardModel.findOne({ mileboardID: id });
+      document.mileboardData[0] = mileboardData;
+      document.save();
+      console.log("data written");
+    } catch(e) {
+      console.log(e);
+      console.log("data not written");
     }
-
-    const document = await MileboardModel.find({ spreadsheetID: id });
-
-    const mileboardDataArr = document[0].mileboardData;
-
-    //IF THERE IS NO DATA IN ARRAY JUST PUSH IT IN
-    if (mileboardDataArr.length === 0) {
-      mileboardDataArr.push(mileboardData);
-      document[0].save();
-      console.log(mileboardDataArr.length);
-      return "written";
-    } else {
-    
-      const index = mileboardDataArr.findIndex((item) => {
-        return item.name === mileboardData.name;
-      });
-
-      mileboardDataArr[index] = mileboardData;
-
-      if (index === -1) {
-        mileboardDataArr.push(mileboardData);
-      }
-
-      console.log(index);
-
-      document[0].save();
-    }
-  };
+  }
 }
 
 module.exports = { MileboardRepository };
