@@ -100,6 +100,7 @@ io.on("connection", (socket) => {
   socket.on("cloned-obj", (obj) => {
     socket.broadcast.emit(obj);
     // console.log(obj);
+    // console.log(obj);
   });
 
   socket.on("save-canvas", (data) => {
