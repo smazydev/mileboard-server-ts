@@ -5,14 +5,14 @@ const { Mileboard } = require("../../../entities/Mileboard");
 
 const router = express.Router();
 
-router.get("/boards/get-all", async (req: Request, res: Response) => {
+router.get("/api/boards/get-all", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const mileboards = await mileboardService.getAllMileboards();
   res.send(mileboards);
 });
 
-router.get("/boards/:id", async (req: Request, res: Response) => {
+router.get("/api/boards/:id", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const mileboardData = await mileboardService.findMileboardByID(
@@ -21,7 +21,7 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
   res.send(mileboardData);
 });
 
-router.post("/boards/delete", async (req: Request, res: Response) => {
+router.post("/api/boards/delete", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const { mileboardID } = req.body;
@@ -32,7 +32,7 @@ router.post("/boards/delete", async (req: Request, res: Response) => {
   res.send({});
 });
 
-router.post("/boards/update", async (req: Request, res: Response) => {
+router.post("/api/boards/update", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const { mileboardID, mileboardData } = req.body;
@@ -44,7 +44,7 @@ router.post("/boards/update", async (req: Request, res: Response) => {
   res.send(response);
 });
 
-router.post("/boards/create", async (req: Request, res: Response) => {
+router.post("/api/boards/create", async (req: Request, res: Response) => {
   const mileboardService =
     injectionHandler.MileboardServiceSingleton.getInstance();
   const { id } = req.body;
